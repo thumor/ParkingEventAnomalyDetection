@@ -25,47 +25,7 @@
 
 我設計了一套流程，將影片這種非結構化資料，一步步轉化為可以用來判斷異常的量化指標。
 
-```mermaid
-graph TD
-    subgraph "階段一：資料收集與前處理"
-        A[原始停車影片] -->|輸入| B(YOLOv8 車輛追蹤);
-        B --> C{軌跡座標資料};
-    end
-
-    subgraph "階段二：特徵工程"
-        C -->|套用| D[手動定義 ROI];
-        D --> E(ROI 軌跡過濾);
-        E --> F{過濾後的軌跡};
-        F --> G(計算軌跡特徵);
-        G --> H[特徵資料集 .csv];
-    end
-
-    subgraph "階段三：異常檢測模型"
-        H -->|輸入| I(隔離森林 Isolation Forest);
-        I -->|訓練與預測| J{計算異常分數};
-    end
-
-    subgraph "階段四：結果分析"
-        J --> K[標記分數的特徵資料集];
-        K --> L(排序並輸出);
-        L --> M[最可疑異常事件列表];
-    end
-
-    %% Style definitions for better visualization
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style M fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style E fill:#bbf,stroke:#333,stroke-width:2px
-    style G fill:#bbf,stroke:#333,stroke-width:2px
-    style I fill:#bbf,stroke:#333,stroke-width:2px
-    style L fill:#bbf,stroke:#333,stroke-width:2px
-    style C fill:#lightgrey,stroke:#333,stroke-width:1px
-    style D fill:#lightgrey,stroke:#333,stroke-width:1px
-    style F fill:#lightgrey,stroke:#333,stroke-width:1px
-    style H fill:#lightgrey,stroke:#333,stroke-width:1px
-    style J fill:#lightgrey,stroke:#333,stroke-width:1px
-    style K fill:#lightgrey,stroke:#333,stroke-width:1px
-```
+![專案流程圖](https://github.com/user-attachments/assets/83caf5fb-53a9-4ace-a37b-71356ac17bb9)
 
 簡單來說，我先從影片中把車子的移動路徑（軌跡）抽出來。但考慮到攝影機角度、車格位置都不同，我不能直接比較這些路徑。因此，我轉而計算這些路徑的「內在特徵」——比如路徑有多曲折、駕駛速度是否穩定等等。最後，我用一個叫做「隔離森林」的機器學習模型來找出那些特徵值與眾不同的「異常事件」。
 
