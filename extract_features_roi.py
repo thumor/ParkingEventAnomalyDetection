@@ -3,15 +3,12 @@ import numpy as np
 import os
 import glob
 
-# --- 1. 設定 ---
 # 讀取 ROI 設定檔
 roi_config_file = "roi_config.csv" 
 # 軌跡資料來源
 base_data_dir = "output/trajectories_data"
-# 新的、經過 ROI 過濾的特徵輸出檔案
 output_feature_file = "output/trajectory_features_roi.csv"
 
-# --- 2. 特徵計算邏輯 (與之前相同) ---
 def calculate_features(df_trajectory):
     if len(df_trajectory) < 5: # 提高對最短軌跡長度的要求
         return None 
@@ -33,7 +30,6 @@ def calculate_features(df_trajectory):
     features['speed_std'] = np.std(speeds)
     return features
 
-# --- 3. 主程式 ---
 def main():
     print("--- ROI 特徵提取腳本開始執行 ---")
 
@@ -49,7 +45,6 @@ def main():
     
     # 只處理在 ROI 設定檔中列出的影片
     for video_filename, roi_coords in roi_dict.items():
-        # 組合軌跡資料的檔案路徑 (需要檢查 entry 和 exit 資料夾)
         trajectory_csv_name = f"data_{os.path.splitext(video_filename)[0]}.csv"
         possible_paths = [
             os.path.join(base_data_dir, 'entry', trajectory_csv_name),
@@ -68,15 +63,11 @@ def main():
 
         df_traj = pd.read_csv(file_path)
         
-        # #######################################################
-        # ##               這就是關鍵的 ROI 過濾               ##
-        # #######################################################
         roi_x1, roi_y1, roi_x2, roi_y2 = roi_coords
         df_traj_filtered = df_traj[
             (df_traj['x'] >= roi_x1) & (df_traj['x'] <= roi_x2) &
             (df_traj['y'] >= roi_y1) & (df_traj['y'] <= roi_y2)
         ]
-        # #######################################################
         
         features = calculate_features(df_traj_filtered)
         
