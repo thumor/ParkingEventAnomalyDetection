@@ -1,7 +1,6 @@
 import cv2
 import os
 
-# --- 全域變數 ---
 ref_point = []
 drawing = False
 roi_defined = False
@@ -35,9 +34,6 @@ def main():
     """主程式：讀取影片，讓使用者選擇 ROI"""
     global frame_copy
     
-    # ##################################################################
-    # ##  請修改這裡，填入您想定義 ROI 的影片路徑                   ##
-    # ##################################################################
     video_path = 'data/videos/entry/ad806d5678df11f0b5ed48b02d5582d6.mp4' 
     
     if not os.path.exists(video_path):
@@ -45,7 +41,7 @@ def main():
         return
 
     cap = cv2.VideoCapture(video_path)
-    # 只讀取影片的第一幀
+
     ret, frame = cap.read()
     cap.release()
     
@@ -73,9 +69,8 @@ def main():
             frame_copy = frame.copy()
             print("已重置，請重新畫 ROI。")
         
-        elif key == ord('s'): # 按 's' 儲存
+        elif key == ord('s'):
             if roi_defined:
-                # 確保 x1 < x2 且 y1 < y2
                 x1, y1 = ref_point[0]
                 x2, y2 = ref_point[1]
                 roi_x = min(x1, x2)
@@ -83,9 +78,7 @@ def main():
                 roi_w = abs(x2 - x1)
                 roi_h = abs(y2 - y1)
                 
-                # 在終端機印出結果，格式為 CSV
                 video_filename = os.path.basename(video_path)
-                # 我們儲存左上角和右下角座標
                 roi_x1, roi_y1 = roi_x, roi_y
                 roi_x2, roi_y2 = roi_x + roi_w, roi_y + roi_h
                 
@@ -96,7 +89,7 @@ def main():
             else:
                 print("尚未定義 ROI，請先用滑鼠畫出區域。")
 
-        elif key == ord('q'): # 按 'q' 退出
+        elif key == ord('q'):
             break
             
     cv2.destroyAllWindows()
