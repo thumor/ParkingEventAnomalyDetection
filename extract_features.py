@@ -3,11 +3,9 @@ import numpy as np
 import os
 import glob
 
-# --- 1. 設定 ---
 base_data_dir = "output/trajectories_data"
 output_feature_file = "output/trajectory_features.csv"
 
-# --- 2. 特徵計算邏輯 ---
 def calculate_features(df_trajectory):
     """從軌跡 DataFrame 計算一組特徵"""
     if len(df_trajectory) < 2:
@@ -43,12 +41,10 @@ def calculate_features(df_trajectory):
     
     return features
 
-# --- 3. 主程式 ---
 def main():
     """遍歷所有軌跡資料檔，計算特徵並存成一個 CSV"""
     print("--- 特徵提取腳本開始執行 ---")
     
-    # 找到所有軌跡 CSV 檔案的路徑
     entry_files = glob.glob(os.path.join(base_data_dir, 'entry', '*.csv'))
     exit_files = glob.glob(os.path.join(base_data_dir, 'exit', '*.csv'))
     all_files = entry_files + exit_files
@@ -90,6 +86,5 @@ def main():
     print("\n特徵資料預覽:")
     print(df_features.head())
 
-# --- 執行主程式 ---
 if __name__ == '__main__':
     main()
