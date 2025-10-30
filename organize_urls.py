@@ -1,8 +1,6 @@
 import pandas as pd
 import os
 
-# --- 設定 ---
-# 使用我們新的、簡化的檔名
 csv_input_file = 'video_list_source.csv'
 excel_output_file = 'video_url_list.xlsx'
 
@@ -13,7 +11,6 @@ def main():
     """
     print("--- 腳本開始執行 ---")
     
-    # 檢查輸入檔案是否存在
     print(f"步驟 1: 正在檢查檔案 '{csv_input_file}' 是否存在...")
     if not os.path.exists(csv_input_file):
         print(f"*** 錯誤：找不到輸入的 CSV 檔案 '{csv_input_file}' ***")
@@ -30,7 +27,6 @@ def main():
         print(f"*** 錯誤：讀取 CSV 檔案時發生問題：{e} ***")
         return
 
-    # ... 後續的程式碼和之前一樣 ...
     print("步驟 3: 正在整理資料 (分類、標籤)...")
     df_exit = pd.DataFrame({'url': df['Type 0']}).dropna()
     df_exit['event_type'] = 'exit'
