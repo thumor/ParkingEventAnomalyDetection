@@ -3,14 +3,11 @@ import os
 import requests
 from tqdm import tqdm
 
-# --- 設定 ---
-# 這個腳本會讀取我們上一步產生的 Excel 檔案
+
 input_excel_file = 'video_url_list.xlsx'
 
-# 設定影片下載後要存放的基礎路徑
 base_output_dir = "data/videos"
 
-# --- 主程式 ---
 def download_video(url, filepath):
     """下載單一影片並顯示進度條"""
     try:
@@ -72,7 +69,6 @@ def main():
             if download_video(url, filepath):
                 download_count += 1
         else:
-            # 如果檔案存在，我們也算它一個進度
             pass
 
     print(f"\n--- 全部處理完成 ---")
