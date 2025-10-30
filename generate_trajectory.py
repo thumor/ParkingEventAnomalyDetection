@@ -4,12 +4,9 @@ from ultralytics import YOLO
 import numpy as np
 import pandas as pd
 
-# --- 1. 設定 ---
 model = YOLO('yolov8s.pt')
 
-# ## 改為設定影片來源資料夾 ##
 input_video_dir = 'data/videos/exit' # 先處理 'entry' 資料夾
-# input_video_dir = 'data/videos/exit' # 之後再換成 'exit'
 
 # 設定輸出路徑
 output_video_dir = f"output/trajectory_videos/{os.path.basename(input_video_dir)}"
@@ -17,7 +14,6 @@ output_data_dir = f"output/trajectories_data/{os.path.basename(input_video_dir)}
 os.makedirs(output_video_dir, exist_ok=True)
 os.makedirs(output_data_dir, exist_ok=True)
 
-# --- 2. 主程式邏輯 ---
 def process_video(video_path, output_video_path, output_data_path):
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -27,7 +23,7 @@ def process_video(video_path, output_video_path, output_data_path):
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(cap.get(cv2.CAP_PROP_FPS))
-    if fps == 0: # 修正 fps 為 0 的情況
+    if fps == 0:
         fps = 30 
 
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
@@ -48,7 +44,7 @@ def process_video(video_path, output_video_path, output_data_path):
 
         for result in results:
             for box in result.boxes:
-                if int(box.cls) == 2: # class 2 is 'car'
+                if int(box.cls) == 2:
                     x1, y1, x2, y2 = box.xyxy[0].cpu().numpy().astype(int)
                     area = (x2 - x1) * (y2 - y1)
                     if area > max_area:
@@ -60,23 +56,17 @@ def process_video(video_path, output_video_path, output_data_path):
             center_x = int((x1 + x2) / 2)
             center_y = int((y1 + y2) / 2)
             
-            # 儲存 (影格編號, x, y)
             trajectory_points.append([frame_number, center_x, center_y])
             
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
             cv2.circle(frame, (center_x, center_y), 5, (0, 0, 255), -1)
 
         if len(trajectory_points) > 1:
-            # 只用座標點來繪圖
             points_for_drawing = np.array([p[1:] for p in trajectory_points], dtype=np.int32)
             cv2.polylines(frame, [points_for_drawing], isClosed=False, color=(0, 255, 255), thickness=2)
 
         out.write(frame)
         frame_number += 1
-        # 為了批次處理，我們移除即時顯示
-        # cv2.imshow('Trajectory Generation', frame)
-        # if cv2.waitKey(1) & 0xFF == ord('q'):
-        #     break
 
     # 釋放資源
     cap.release()
